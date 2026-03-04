@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hangi TOG Kadınısın?</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap');
+
+  :root {
+    --bg: #0a0a0a;
+    --panel: #111111;
+    --border: #cc0000;
+    --accent-red: #ff2222;
+    --accent-white: #f5f5f5;
+    --accent-gray: #888888;
+    --accent-darkred: #880000;
+    --text: #f0f0f0;
+    --pixel: 3px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Press Start 2P', monospace;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 32px, rgba(204,0,0,0.04) 32px, rgba(204,0,0,0.04) 33px),
+      repeating-linear-gradient(90deg, transparent, transparent 32px, rgba(204,0,0,0.04) 32px, rgba(204,0,0,0.04) 33px);
+  }
+
+  .container {
+    width: 100%;
+    max-width: 680px;
+  }
+
+  /* PIXEL BORDER */
+  .pixel-box {
+    background: var(--panel);
+    border: var(--pixel) solid var(--border);
+    box-shadow:
+      0 0 0 var(--pixel) var(--bg),
+      0 0 0 calc(var(--pixel)*2) var(--border),
+      0 8px 32px rgba(204,0,0,0.35);
+    padding: 32px;
+    position: relative;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .header .tag {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: #888888;
+    letter-spacing: 4px;
+    display: block;
+    margin-bottom: 12px;
+    animation: blink 1.2s step-end infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .header h1 {
+    font-size: clamp(13px, 3vw, 18px);
+    color: var(--accent-white);
+    line-height: 1.8;
+    text-shadow: 3px 3px 0 rgba(204,0,0,0.5);
+  }
+
+  .header h1 span {
+    color: var(--accent-red);
+  }
+
+  /* PROGRESS */
+  .progress-bar {
+    margin-bottom: 28px;
+  }
+
+  .progress-label {
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: #888888;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+  }
+
+  .progress-track {
+    height: 14px;
+    background: #1a1a1a;
+    border: 2px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #880000, #ff2222);
+    transition: width 0.4s steps(10);
+    image-rendering: pixelated;
+  }
+
+  /* QUESTION */
+  .question-num {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--border);
+    margin-bottom: 16px;
+    letter-spacing: 3px;
+  }
+
+  .question-text {
+    font-size: clamp(9px, 2vw, 12px);
+    line-height: 2;
+    margin-bottom: 28px;
+    color: #fff;
+    min-height: 60px;
+  }
+
+  /* OPTIONS */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .option-btn {
+    background: #1a1a1a;
+    border: 2px solid #2a2a2a;
+    color: var(--text);
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(7px, 1.5vw, 9px);
+    padding: 14px 16px;
+    text-align: left;
+    cursor: pointer;
+    line-height: 1.9;
+    transition: all 0.1s steps(2);
+    position: relative;
+    padding-left: 36px;
+  }
+
+  .option-btn::before {
+    content: attr(data-key);
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--border);
+  }
+
+  .option-btn:hover {
+    border-color: var(--border);
+    background: #1f0000;
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--border);
+    color: #fff;
+  }
+
+  .option-btn:active {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
+
+  .option-btn.selected {
+    border-color: var(--accent-white);
+    background: #200000;
+    box-shadow: 4px 4px 0 #555;
+    color: var(--accent-white);
+  }
+
+  /* RESULT */
+  .result-screen {
+    display: none;
+    text-align: center;
+  }
+
+  .result-screen.active {
+    display: block;
+  }
+
+  .result-char-icon {
+    font-size: 72px;
+    display: block;
+    margin: 0 auto 20px;
+    animation: float 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 16px rgba(204,0,0,0.8));
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .result-title-label {
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+    color: #888888;
+  }
+
+  .result-name {
+    font-size: clamp(14px, 4vw, 20px);
+    margin-bottom: 20px;
+    line-height: 1.6;
+    color: var(--accent-white);
+  }
+
+  .result-divider {
+    height: 3px;
+    margin: 20px 0;
+    background: repeating-linear-gradient(90deg, var(--border) 0px, var(--border) 8px, transparent 8px, transparent 16px);
+  }
+
+  .result-text {
+    font-family: 'VT323', monospace;
+    font-size: clamp(18px, 4vw, 22px);
+    line-height: 1.6;
+    color: #ccc;
+    margin-bottom: 28px;
+  }
+
+  .result-stats {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .stat-chip {
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    padding: 4px 12px;
+    border: 2px solid var(--border);
+    color: var(--accent-white);
+    letter-spacing: 1px;
+  }
+
+  .restart-btn {
+    background: var(--border);
+    color: #fff;
+    border: none;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    padding: 14px 24px;
+    cursor: pointer;
+    transition: all 0.1s steps(2);
+    display: block;
+    margin: 0 auto;
+  }
+
+  .restart-btn:hover {
+    background: var(--accent-red);
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 #fff;
+  }
+
+  /* CORNER DECORATIONS */
+  .corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: var(--border);
+  }
+  .corner.tl { top: -3px; left: -3px; }
+  .corner.tr { top: -3px; right: -3px; }
+  .corner.bl { bottom: -3px; left: -3px; }
+  .corner.br { bottom: -3px; right: -3px; }
+
+  /* SCANLINE overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .tog-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: #444;
+    letter-spacing: 3px;
+  }
+
+  .tog-footer span {
+    color: var(--border);
+  }
+</head>
+<body>
+<div class="container">
+  <div class="pixel-box" id="quiz-box">
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <!-- HEADER -->
+    <div class="header" id="header-area">
+      <span class="tag">▶ TOG × 8 MART 2026</span>
+      <h1>HANGİ TOG<br><span>KADINISİN?</span></h1>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div id="quiz-screen">
+      <div class="progress-bar">
+        <div class="progress-label" id="progress-label">SORU 1 / 5</div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill" style="width:20%"></div>
+        </div>
+      </div>
+
+      <div class="question-num" id="question-num">// SORU_01</div>
+      <div class="question-text" id="question-text"></div>
+
+      <div class="options" id="options-container"></div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div class="result-screen" id="result-screen">
+      <span class="result-char-icon" id="result-icon"></span>
+      <div class="result-title-label">SEN BİR</div>
+      <div class="result-name" id="result-name"></div>
+      <div class="result-divider"></div>
+      <div class="result-text" id="result-text"></div>
+      <div class="result-stats" id="result-stats"></div>
+      <button class="restart-btn" onclick="restart()">▶ TEKRAR OYNA</button>
+    </div>
+  </div>
+
+  <div class="tog-footer">TOG &mdash; <span>TOPLUM GÖNÜLLÜLERİ VAKFI</span></div>
+</div>
+
+<script>
+  const CHARS = {
+    A: {
+      id: 'A',
+      name: '🔥 Meydan Okuyan',
+      icon: '🔥',
+      color: '#ff4444',
+      label: 'MEYDAN OKUYAN',
+      text: 'Sen TOG\'un sesi ve cesaretsin. Haksızlık gördüğünde ilk kalkan, kalabalığı harekete geçiren sensin. Bazen tek başına bile olsan susmuyorsun — çünkü biliyorsun ki bir ses yeter, yankısı büyür. 8 Mart\'ta sahne senin.',
+      keywords: ['CESARET', 'SES', 'EYLEM']
+    },
+    B: {
+      id: 'B',
+      name: '🌱 Köklü',
+      icon: '🌱',
+      color: '#44ff88',
+      label: 'KÖKLÜ',
+      text: 'Sen TOG\'un hafızası ve temelisin. Gürültü dindiğinde hâlâ orada olan sensin — araştıran, belgeleyen, sürdüren. Değişim sabır ister, bunu en iyi sen bilirsin. Kökler ne kadar derinde olursa, ağaç o kadar yükseğe çıkar.',
+      keywords: ['SABIR', 'HAFIZA', 'KÖKLÜ']
+    },
+    C: {
+      id: 'C',
+      name: '✨ Bağ Kuran',
+      icon: '✨',
+      color: '#dd88ff',
+      label: 'BAĞ KURAN',
+      text: 'Sen TOG\'un kalbi ve dayanışmasısın. İnsanların birbirini bulmasını sağlayan, toplumu topluluk yapan sensin. Güçlü olmak için tek başına olmak zorunda değilsin — bunu herkese hatırlatıyorsun. Seninle her şey daha sıcak.',
+      keywords: ['DAYANIŞMA', 'BAĞLANTI', 'SICAKLIK']
+    },
+    D: {
+      id: 'D',
+      name: '🎨 Dönüştüren',
+      icon: '🎨',
+      color: '#ffdd44',
+      label: 'DÖNÜŞTÜREN',
+      text: 'Sen TOG\'un hikayesi ve dönüşümüsün. Görünmeyeni görünür kılan, duyulmayanı anlatılabilir yapan sensin. Bir tasarım, bir kelime, bir kare — elinden geçen her şey anlam kazanıyor. Değişimin yüzü senin yüzün.',
+      keywords: ['YARATICI', 'HİKAYE', 'DÖNÜŞÜM']
+    }
+  };
+
+  const QUESTIONS = [
+    {
+      type: 'KLASİK',
+      text: 'Seni en iyi tanımlayan şey nedir?',
+      options: [
+        { text: 'Bir şeyin yanlış olduğunu biliyorsam susamam.', char: 'A' },
+        { text: 'Acele etmem, ama bırakmam da.', char: 'B' },
+        { text: 'Etrafımdaki insanların iyi hissetmesi benim için önemli.', char: 'C' },
+        { text: 'Anlatamazsam eksik kalır, bir şekilde ifade ederim.', char: 'D' }
+      ]
+    },
+    {
+      type: 'SENARYO',
+      text: 'Kampüste haksız bir uygulama olduğunu öğrendin. Ne yaparsın?',
+      options: [
+        { text: 'Hemen arkadaşlarımı toplarım, sesimizi duyuracağız.', char: 'A' },
+        { text: 'Önce belgeleri incelerim, ne zaman başladı, neden devam ediyor.', char: 'B' },
+        { text: 'Etkilenenleri dinlerim, ne istediklerini anlamaya çalışırım.', char: 'C' },
+        { text: 'Durumu görünür kılacak bir içerik üretirim.', char: 'D' }
+      ]
+    },
+    {
+      type: 'KLASİK',
+      text: 'Grup projesinde senin rolün genellikle ne olur?',
+      options: [
+        { text: 'Sunum yapan, grubu temsil eden.', char: 'A' },
+        { text: 'Araştırmayı yapan, her şeyin sağlam durmasını sağlayan.', char: 'B' },
+        { text: 'Grubu bir arada tutan, moralimizi yüksek tutan.', char: 'C' },
+        { text: 'Slaytı, görseli, metni hazırlayan.', char: 'D' }
+      ]
+    },
+    {
+      type: 'SENARYO',
+      text: '8 Mart\'ta elinde bir megafon var. Ne söylersin?',
+      options: [
+        { text: 'Hazırladığım bir slogan var, tüm meydana haykırırım.', char: 'A' },
+        { text: 'Verileri bilirim, somut bir şey söylerim.', char: 'B' },
+        { text: 'Yanımdaki herkese megafonu uzatırım, herkesin sesi duyulsun.', char: 'C' },
+        { text: 'Söylemek yerine o anı kaydederim, belki bir afiş olur.', char: 'D' }
+      ]
+    },
+    {
+      type: 'KARMA',
+      text: 'Favori TOG anın hangisine benzer?',
+      options: [
+        { text: 'Bir kampanya başlatıp yayıldığını görmek.', char: 'A' },
+        { text: 'Uzun süren bir projenin sonuçlandığını görmek.', char: 'B' },
+        { text: 'Yeni biriyle tanışıp "seninle çalışmak çok güzeldi" demesini duymak.', char: 'C' },
+        { text: 'Yaptığın bir içeriğin insanları etkilediğini görmek.', char: 'D' }
+      ]
+    }
+  ];
+
+  const KEYS = ['A', 'B', 'C', 'D'];
+
+  let current = 0;
+  let scores = { A: 0, B: 0, C: 0, D: 0 };
+
+  function renderQuestion() {
+    const q = QUESTIONS[current];
+    document.getElementById('progress-label').textContent = `SORU ${current + 1} / ${QUESTIONS.length}`;
+    document.getElementById('progress-fill').style.width = `${((current + 1) / QUESTIONS.length) * 100}%`;
+    document.getElementById('question-num').textContent = `// SORU_0${current + 1}`;
+    document.getElementById('question-text').textContent = q.text;
+
+    const container = document.getElementById('options-container');
+    container.innerHTML = '';
+
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.setAttribute('data-key', KEYS[i]);
+      btn.textContent = opt.text;
+      btn.onclick = () => selectOption(btn, opt.char, container);
+      container.appendChild(btn);
+    });
+  }
+
+  function selectOption(btn, char, container) {
+    container.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    scores[char]++;
+
+    setTimeout(() => {
+      current++;
+      if (current < QUESTIONS.length) {
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }, 350);
+  }
+
+  function showResult() {
+    // Find winner
+    let winner = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+    const char = CHARS[winner];
+
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('header-area').style.display = 'none';
+
+    const resultScreen = document.getElementById('result-screen');
+    resultScreen.classList.add('active');
+
+    document.getElementById('result-icon').textContent = char.icon;
+    document.getElementById('result-name').textContent = char.name;
+    document.getElementById('result-text').textContent = char.text;
+
+    const statsDiv = document.getElementById('result-stats');
+    statsDiv.innerHTML = '';
+    char.keywords.forEach(kw => {
+      const chip = document.createElement('div');
+      chip.className = 'stat-chip';
+      chip.textContent = kw;
+      statsDiv.appendChild(chip);
+    });
+  }
+
+  function restart() {
+    current = 0;
+    scores = { A: 0, B: 0, C: 0, D: 0 };
+
+    document.getElementById('quiz-screen').style.display = 'block';
+    document.getElementById('header-area').style.display = 'block';
+    document.getElementById('result-screen').classList.remove('active');
+
+    renderQuestion();
+  }
+
+  // Init
+  renderQuestion();
+</script>
+</body>
+</html>
